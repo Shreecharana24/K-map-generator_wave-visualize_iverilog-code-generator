@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boolean Expression Solver - Learn Digital Logic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        },
+                        electric: {
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                        },
+                        neon: {
+                            green: '#00ff88',
+                            blue: '#00ccff',
+                            purple: '#b967ff',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'slide-in': 'slideIn 0.5s ease-out',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' }
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.5)' },
+                            '100%': { boxShadow: '0 0 30px rgba(59, 130, 246, 0.8), 0 0 40px rgba(99, 102, 241, 0.6)' }
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateX(-100px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' }
+                        }
+                    },
+                    backgroundImage: {
+                        'circuit-pattern': "url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%239C92AC\" fill-opacity=\"0.05\"%3E%3Cpath d=\"M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')",
+                        'grid-pattern': "url('data:image/svg+xml,%3Csvg width=\"40\" height=\"40\" viewBox=\"0 0 40 40\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"%239C92AC\" fill-opacity=\"0.03\"%3E%3Cpath d=\"M0 0h40v40H0V0zm1 1h38v38H1V1z\"/%3E%3C/g%3E%3C/svg%3E')",
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .hero-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .expression-input {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+        
+        .dark .expression-input {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        }
+        
+        .kmap-cell {
+            transition: all 0.3s ease;
+        }
+        
+        .kmap-cell.filled {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
+        }
+        
+        .gate-icon {
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+        }
+        
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .binary-bg {
+            background: linear-gradient(45deg, transparent 49%, rgba(59, 130, 246, 0.1) 50%, transparent 51%);
+            background-size: 10px 10px;
+        }
+    </style>
+</head>
+<body class="h-full font-inter bg-white dark:bg-gray-900 transition-colors duration-500 bg-grid-pattern">
+    <!-- Animated Background Elements -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-1/4 left-1/4 w-4 h-4 bg-blue-400 rounded-full opacity-20 animate-float"></div>
+        <div class="absolute top-1/3 right-1/4 w-3 h-3 bg-purple-400 rounded-full opacity-30 animate-float" style="animation-delay: -2s;"></div>
+        <div class="absolute bottom-1/4 left-1/3 w-2 h-2 bg-green-400 rounded-full opacity-25 animate-float" style="animation-delay: -4s;"></div>
+    </div>
+
+    <!-- Theme Toggle -->
+    <div class="fixed top-6 right-6 z-50">
+        <button id="themeToggle" class="p-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 border border-gray-200/50 dark:border-gray-700/50 hover:scale-110">
+            <i id="themeIcon" class="fas fa-moon text-gray-700 dark:text-yellow-400 text-lg"></i>
+        </button>
+    </div>
+
+    <div class="min-h-screen relative z-10">
+        <!-- Hero Section -->
+        <div class="hero-gradient text-white relative overflow-hidden">
+            <div class="absolute inset-0 bg-black/20"></div>
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                <div class="text-center">
+                    <div class="flex justify-center mb-6">
+                        <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
+                            <i class="fas fa-microchip text-4xl"></i>
+                        </div>
+                    </div>
+                    <h1 class="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                        Digital Logic Explorer
+                    </h1>
+                    <p class="text-xl md:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
+                        Master Boolean Algebra with Interactive Truth Tables, K-Maps, and Real-time Verilog Simulation
+                    </p>
+                    <div class="flex flex-wrap justify-center gap-4 mb-12">
+                        <div class="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2 border border-white/20">
+                            <span class="text-blue-100">🎓 Perfect for Students</span>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2 border border-white/20">
+                            <span class="text-blue-100">⚡ Real-time Simulation</span>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2 border border-white/20">
+                            <span class="text-blue-100">🔬 Visual Learning</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 -mt-8 relative z-20">
+            <!-- Input Card -->
+            <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 mb-12 border border-gray-200/50 dark:border-gray-700/50 card-hover">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-3">
+                        Enter Your Boolean Expression
+                    </h2>
+                    <p class="text-gray-600 dark:text-gray-300 text-lg">
+                        Start exploring digital logic concepts with any Boolean expression
+                    </p>
+                </div>
+
+                <div class="mb-8">
+                    <div class="expression-input rounded-2xl p-1 border-2 border-gray-300/50 dark:border-gray-600/50 focus-within:border-primary-500 focus-within:animate-glow">
+                        <input 
+                            type="text" 
+                            id="expressionInput"
+                            class="w-full px-6 py-5 bg-transparent border-0 text-gray-900 dark:text-white text-xl font-mono focus:ring-0 focus:outline-none placeholder-gray-500 dark:placeholder-gray-400"
+                            placeholder="Try: (A & B) | (C & D)"
+                            value="(A & ~B & C) | (~A & B & D)"
+                        >
+                    </div>
+                    <div class="mt-4 flex flex-wrap gap-2 text-sm text-gray-600 dark:text-gray-400">
+                        <div class="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full flex items-center gap-2">
+                            <i class="fas fa-code text-primary-500"></i>
+                            <span>Operators: <code>&</code> <code>|</code> <code>~</code> <code>^</code></span>
+                        </div>
+                        <div class="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full flex items-center gap-2">
+                            <i class="fas fa-font text-primary-500"></i>
+                            <span>Variables: A-Z, a-z</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <button id="generateTruthTableBtn" class="action-btn bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700">
+                        <i class="fas fa-table-cells-large text-white"></i>
+                        <span>Truth Table</span>
+                        <div class="pulse-dot w-2 h-2 bg-white rounded-full ml-2"></div>
+                    </button>
+                    <button id="generateKmapBtn" class="action-btn bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700">
+                        <i class="fas fa-border-all text-white"></i>
+                        <span>K-Map Analysis</span>
+                        <div class="pulse-dot w-2 h-2 bg-white rounded-full ml-2"></div>
+                    </button>
+                    <button id="generateVerilogBtn" class="action-btn bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700">
+                        <i class="fas fa-bolt text-white"></i>
+                        <span>Verilog Lab</span>
+                        <div class="pulse-dot w-2 h-2 bg-white rounded-full ml-2"></div>
+                    </button>
+                    <button id="resetBtn" class="action-btn bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700">
+                        <i class="fas fa-rotate text-white"></i>
+                        <span>Reset All</span>
+                    </button>
+                </div>
+
+                <!-- Quick Examples -->
+                <div class="border-t border-gray-200 dark:border-gray-600 pt-8">
+                    <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center">
+                        <i class="fas fa-rocket text-primary-500 mr-2"></i>
+                        Quick Examples to Explore
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                        <button class="example-btn" data-expr="A & B">
+                            <i class="fas fa-android text-blue-500"></i>
+                            AND Gate
+                        </button>
+                        <button class="example-btn" data-expr="A | B">
+                            <i class="fas fa-plus-circle text-green-500"></i>
+                            OR Gate
+                        </button>
+                        <button class="example-btn" data-expr="A ^ B">
+                            <i class="fas fa-not-equal text-purple-500"></i>
+                            XOR Gate
+                        </button>
+                        <button class="example-btn" data-expr="~(A & B)">
+                            <i class="fas fa-ban text-red-500"></i>
+                            NAND Gate
+                        </button>
+                        <button class="example-btn" data-expr="(A & B) | (C & D)">
+                            <i class="fas fa-sitemap text-yellow-500"></i>
+                            Complex Logic
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Status -->
+            <div id="learningStatus" class="hidden bg-gradient-to-r from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 mb-8 border border-blue-200 dark:border-blue-800">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-blue-500 rounded-xl p-3">
+                            <i class="fas fa-graduation-cap text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800 dark:text-white">Learning Progress</h3>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm" id="statusMessage">Analyzing your expression...</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                        <div class="w-3 h-3 bg-yellow-500 rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
+                        <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="hidden text-center py-16">
+                <div class="inline-flex flex-col items-center">
+                    <div class="relative">
+                        <div class="w-20 h-20 border-4 border-primary-200 dark:border-primary-800 rounded-full"></div>
+                        <div class="w-20 h-20 border-4 border-primary-500 border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
+                        <i class="fas fa-microchip text-primary-500 text-xl absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
+                    </div>
+                    <p class="mt-6 text-gray-600 dark:text-gray-400 font-medium text-lg">Processing your digital circuit...</p>
+                    <p class="text-gray-500 dark:text-gray-500 text-sm mt-2">Analyzing logic gates and generating visualizations</p>
+                </div>
+            </div>
+
+            <!-- Error Alert -->
+            <div id="errorAlert" class="hidden bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-6 mb-8 backdrop-blur-sm">
+                <div class="flex items-center gap-4">
+                    <div class="bg-red-500 rounded-xl p-3">
+                        <i class="fas fa-exclamation-triangle text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-red-800 dark:text-red-200">Circuit Error</h4>
+                        <span id="errorMessage" class="text-red-700 dark:text-red-300"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="resultsSection" class="hidden space-y-8">
+                <!-- Truth Table Results -->
+                <div id="truthTableResults" class="result-section animate-slide-in">
+                    <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-gray-200/50 dark:border-gray-700/50 card-hover">
+                        <div class="flex items-center justify-between mb-8">
+                            <div class="flex items-center gap-4">
+                                <div class="bg-blue-500 rounded-xl p-3 gate-icon">
+                                    <i class="fas fa-table-cells-large text-white text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Truth Table Analysis</h2>
+                                    <p class="text-gray-600 dark:text-gray-300">Complete input-output mapping of your logic circuit</p>
+                                </div>
+                            </div>
+                            <div class="bg-blue-100 dark:bg-blue-900/30 rounded-xl px-4 py-2">
+                                <span class="text-blue-700 dark:text-blue-300 font-semibold" id="variableCount">0 Variables</span>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto rounded-2xl border-2 border-gray-200/50 dark:border-gray-700/50 bg-white dark:bg-gray-900">
+                            <div id="truthTableContainer" class="min-w-full"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- K-Map Results -->
+                <div id="kmapResults" class="result-section animate-slide-in">
+                    <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-gray-200/50 dark:border-gray-700/50 card-hover">
+                        <div class="flex items-center justify-between mb-8">
+                            <div class="flex items-center gap-4">
+                                <div class="bg-purple-500 rounded-xl p-3 gate-icon">
+                                    <i class="fas fa-border-all text-white text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Karnaugh Map & Optimization</h2>
+                                    <p class="text-gray-600 dark:text-gray-300">Visual simplification and prime implicant identification</p>
+                                </div>
+                            </div>
+                            <div class="bg-purple-100 dark:bg-purple-900/30 rounded-xl px-4 py-2">
+                                <span class="text-purple-700 dark:text-purple-300 font-semibold">Pattern Analysis</span>
+                            </div>
+                        </div>
+                        
+                        <!-- K-Map Visualization -->
+                        <div class="mb-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-8 border-2 border-gray-200/50 dark:border-gray-700/50">
+                            <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-6 text-center">Karnaugh Map Visualization</h3>
+                            <div id="kmapContainer" class="flex justify-center"></div>
+                        </div>
+
+                        <!-- Optimization Results -->
+                        <div id="simplificationResults"></div>
+                    </div>
+                </div>
+
+                <!-- Verilog Results -->
+                <div id="verilogResults" class="result-section animate-slide-in">
+                    <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-gray-200/50 dark:border-gray-700/50 card-hover">
+                        <div class="flex items-center justify-between mb-8">
+                            <div class="flex items-center gap-4">
+                                <div class="bg-green-500 rounded-xl p-3 gate-icon">
+                                    <i class="fas fa-bolt text-white text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Verilog Simulation Lab</h2>
+                                    <p class="text-gray-600 dark:text-gray-300">Real-time HDL simulation and waveform analysis</p>
+                                </div>
+                            </div>
+                            <div class="bg-green-100 dark:bg-green-900/30 rounded-xl px-4 py-2">
+                                <span class="text-green-700 dark:text-green-300 font-semibold">Live Simulation</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Generated Verilog Code -->
+                        <div class="mb-8">
+                            <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-3">
+                                <i class="fas fa-file-code text-green-500"></i>
+                                Generated Verilog Code
+                                <span class="bg-green-500 text-white text-sm px-3 py-1 rounded-full">HDL</span>
+                            </h3>
+                            <div class="bg-gray-900 rounded-2xl p-6 overflow-x-auto border-2 border-green-500/20">
+                                <pre id="verilogCode" class="text-green-400 font-mono text-sm leading-relaxed"></pre>
+                            </div>
+                        </div>
+
+                        <!-- Waveform -->
+                        <div class="mb-8">
+                            <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-3">
+                                <i class="fas fa-wave-square text-blue-500"></i>
+                                Digital Waveform Simulation
+                                <span class="bg-blue-500 text-white text-sm px-3 py-1 rounded-full">Timing Diagram</span>
+                            </h3>
+                            <div class="bg-white dark:bg-gray-900 rounded-2xl border-2 border-gray-200/50 dark:border-gray-700/50 p-6">
+                                <canvas id="waveformChart" class="w-full h-96"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Simulation Output -->
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-3">
+                                <i class="fas fa-terminal text-purple-500"></i>
+                                Simulation Console Output
+                                <span class="bg-purple-500 text-white text-sm px-3 py-1 rounded-full">Logs</span>
+                            </h3>
+                            <div class="bg-gray-900 rounded-2xl p-6 overflow-x-auto border-2 border-purple-500/20">
+                                <pre id="simulationOutput" class="text-green-400 font-mono text-sm leading-relaxed"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Educational Footer -->
+            <div class="text-center mt-16 pt-8 border-t border-gray-200 dark:border-gray-700">
+                <p class="text-gray-600 dark:text-gray-400">
+                    Made for students learning Digital Logic Design and Boolean Algebra
+                </p>
+                <p class="text-gray-500 dark:text-gray-500 text-sm mt-2">
+                    Perfect for Computer Science, Electrical Engineering, and Digital Electronics courses
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

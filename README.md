@@ -2,127 +2,148 @@
 
 A full-stack tool that solves Boolean expressions, generates truth tables, simplifies them using Karnaugh Maps (K-maps), and auto-generates Verilog code with simulation results.
 
-## This project contains:
+## 🚀 Project Overview
 
-A Flask backend for expression solving, K-map simplification, and Verilog simulation  
-A Frontend UI (HTML, CSS, JS) to interact with the API
+This project is divided into two parts:
+- **Backend (Flask):** Handles expression parsing, K-map logic, and Verilog simulation.
+- **Frontend (HTML/JS):** A clean UI to interact with the API and visualize results.
 
-## Project Structure
-kmap-visualizer/  
-│  
-├── backend/  
-│   ├── app.py  
-│   ├── kmap_utils.py  
-│   ├── verilog_runner.py  
-│   ├── requirements.txt  
-│  
-├── frontend/  
-│   ├── index.html  
-│   ├── script.js  
-│   ├── styles.css  
-│  
-└── .gitignore  
+## 📂 Project Structure
 
-## Features
+    kmap-visualizer/
+    │
+    ├── backend/
+    │   ├── app.py              # Main Flask application
+    │   ├── kmap_utils.py       # Logic for K-Map simplification
+    │   ├── verilog_runner.py   # Handles Icarus Verilog simulation
+    │   └── requirements.txt    # Python dependencies
+    │
+    ├── frontend/
+    │   ├── index.html          # Main user interface
+    │   ├── script.js           # API calls and DOM manipulation
+    │   └── styles.css          # Styling
+    │
+    └── .gitignore
+
+## ✨ Features
+
 ### Backend (Flask)
-
-Parse and evaluate Boolean expressions  
-Generate truth tables  
-Generate K-maps  
-Produce simplified Boolean expressions  
-Auto-generate Verilog code  
-Simulate Verilog output using Icarus Verilog  
-Return waveform data and simulation results
+- Parse and evaluate Boolean expressions.
+- Generate truth tables.
+- Generate K-maps and simplified Boolean expressions.
+- Auto-generate Verilog code.
+- Simulate Verilog output using **Icarus Verilog**.
+- Return waveform data and simulation results.
 
 ### Frontend
+- Input field for Boolean expressions.
+- Display generated truth tables.
+- Visualize simplified results from K-map.
+- Show generated Verilog code.
+- Display simulation output logs.
 
-Input Boolean expressions  
-Display truth table  
-Display simplified result from K-map  
-Show generated Verilog code  
-Show simulation output
+---
 
-## Backend Setup
-1. Navigate to backend folder  
+## 🔧 Backend Setup
+
+### 1. Navigate to backend folder
+```bash
 cd backend
+```
 
-2. Create and activate virtual environment (optional)  
-python -m venv venv  
-venv\Scripts\activate        # Windows  
-source venv/bin/activate     # Linux / macOS
+### 2. Create and activate virtual environment (Optional)
+**Windows:**
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+**Linux / macOS:**
+```bash
+python -m venv venv
+source venv/bin/activate
+```
 
-3. Install dependencies  
+### 3. Install dependencies
+```bash
 pip install -r requirements.txt
+```
 
-4. Install Icarus Verilog (required for simulation)  
+### 4. Install Icarus Verilog (Required for simulation)
 
-#### Ubuntu/Linux  
+- **Ubuntu/Linux:**
+  ```bash
+  sudo apt install iverilog
+  ```
 
-sudo apt install iverilog  
+- **Windows:**
+  1. Download from: [bleyer.org/icarus/](https://bleyer.org/icarus/)
+  2. Add the executable path to your System Environment Variables (PATH):
+     `C:\iverilog\bin`
 
-
-#### Windows  
-Download from: 
-https://bleyer.org/icarus/  
-
-Add to PATH:  
-
-C:\iverilog\bin
-
-5. Run the backend server  
+### 5. Run the backend server
+```bash
 python app.py
+```
+*Server will start at: `http://localhost:5000`*
 
+---
 
-Server will start at: 
-http://localhost:5000
+## 🖥️ Frontend Setup
 
-## Frontend Setup
+Since this is a static frontend, you can technically just open `frontend/index.html` in your browser.
 
-Simply open:
+**However**, if your browser blocks API calls due to **CORS policy**, run a local server:
 
-frontend/index.html
+1. Navigate to the frontend folder:
+   ```bash
+   cd frontend
+   ```
+2. Start a simple Python server:
+   ```bash
+   python -m http.server 3000
+   ```
+3. Open in browser:
+   `http://localhost:3000`
 
+---
 
-If the browser blocks API calls (CORS), run a local server:
+## 📡 API Endpoints
 
-cd frontend  
-python -m http.server 3000
+### 1. Generate Truth Table
+`POST /generate_truth_table`
 
+**Request Body:**
+```json
+{
+  "expression": "A'B + AB'"
+}
+```
 
-Then open:
+### 2. Generate K-Map & Simplification
+`POST /generate_kmap`
 
-http://localhost:3000
+**Request Body:**
+```json
+{
+  "expression": "A + BC'"
+}
+```
 
-## API Endpoints  
-POST /generate_truth_table  
-Generate truth table.  
-Request:  
-{  
-  "expression": "A'B + AB'"  
-}  
+### 3. Generate & Simulate Verilog
+`POST /generate_verilog`
 
-POST /generate_kmap  
-Generate K-map and simplified expression.  
-Request:  
-{  
-  "expression": "A + BC'"  
-}  
+**Request Body:**
+```json
+{
+  "expression": "(A + B)'C"
+}
+```
 
-POST /generate_verilog  
-Generate Verilog and simulate.  
-Request:  
-{  
-  "expression": "(A + B)'C"  
-}  
+## 📝 Supported Expression Examples
 
-## Supported Expression Examples
-
-A + B'
-
-AB + A'C
-
-(A + B)(C' + D)
-
-A ^ B
-
-A'BC + AB'C
+You can try inputs like:
+- `A + B'`
+- `AB + A'C`
+- `(A + B)(C' + D)`
+- `A ^ B` (XOR)
+- `A'BC + AB'C`

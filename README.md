@@ -2,13 +2,13 @@
 
 A full-stack tool that solves Boolean expressions, generates truth tables, simplifies them using Karnaugh Maps (K-maps), and auto-generates Verilog code with simulation results.
 
-## 🚀 Project Overview
+## Project Overview
 
 This project is divided into two parts:
 - **Backend (Flask):** Handles expression parsing, K-map logic, and Verilog simulation.
 - **Frontend (HTML/JS):** A clean UI to interact with the API and visualize results.
 
-## 📂 Project Structure
+## Project Structure
 
     kmap-visualizer/
     │
@@ -25,7 +25,7 @@ This project is divided into two parts:
     │
     └── .gitignore
 
-## ✨ Features
+## Features
 
 ### Backend (Flask)
 - Parse and evaluate Boolean expressions.
@@ -44,7 +44,7 @@ This project is divided into two parts:
 
 ---
 
-## 🔧 Backend Setup
+## Backend Setup
 
 ### 1. Navigate to backend folder
 ```bash
@@ -88,7 +88,7 @@ python app.py
 
 ---
 
-## 🖥️ Frontend Setup
+## Frontend Setup
 
 Since this is a static frontend, you can technically just open `frontend/index.html` in your browser.
 
@@ -107,7 +107,7 @@ Since this is a static frontend, you can technically just open `frontend/index.h
 
 ---
 
-## 📡 API Endpoints
+## API Endpoints
 
 ### 1. Generate Truth Table
 `POST /generate_truth_table`
@@ -139,7 +139,7 @@ Since this is a static frontend, you can technically just open `frontend/index.h
 }
 ```
 
-## 📝 Supported Expression Examples
+## Supported Expression Examples
 
 You can try inputs like:
 - `A + B'`
